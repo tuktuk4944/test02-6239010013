@@ -195,6 +195,8 @@ $(document).ready(function(){
             $("#gpa").text('x.xx');
             $("#englishLevel").text('??');
             $("#englishScore").text('');
+            $("div#panel-compre").removeClass("panel panel-red");
+            $("div#panel-compre").addClass("panel panel-green");
         });
     });
 </script>
