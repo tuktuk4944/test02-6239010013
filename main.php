@@ -5,7 +5,7 @@
 </div>
 <!-- ... Your content goes here ... -->
 <div class="row">
-    <form action="" class="form-horizontal" id="frmStudent">
+    <form action="" class="form-horizontal" id="frmStudent" method="get">
         <div class="col-md-2">
             <div class="thumbnail">
                 <img src="images/students/0.jpg" alt="" id="imgStudent">
@@ -15,7 +15,7 @@
             <div class="form-group">
                 <label for="code" class="control-label col-md-2">เลขประจำตัว:</label>
                 <div class="col-md-9">
-                    <input type="text" class="form-control" id="txtStudentCode" placeholder="ใส่เลขประจำตัวแล้วคลิก ค้นหา หรือกด Enter">
+                    <input type="text" class="form-control" name="txtStudentCode" id="txtStudentCode" placeholder="ใส่เลขประจำตัวแล้วคลิก ค้นหา หรือกด Enter">
                 </div> 
                 <div class="col-md-1">
                     <button type="submit" class="btn btn-primary">
@@ -124,3 +124,77 @@
         </div>
     </div>
 </div>
+<script>
+$(document).ready(function(){
+        $("#frmStudent").submit(function(){
+            $.ajax({
+                url:"getstudent.php",
+                type:"get",
+                dataType:"json",
+                data:{"stdCode" : $("#txtStudentCode").val()},
+                beforeSend:function(){
+                    $.LoadingOverlay('show',{
+                        image:'images/loading.gif',
+                        background:'rgba(200,200,200,0.6)',
+                        text:'Searching...',
+                        textResizeFactor:0.15
+                    });
+                },
+                success:(res)=>{
+                    console.log(res);
+                    $("#txtFirstName").val(res.firstName);
+                    $("#txtLastName").val(res.lastName);
+                    $("#txtDepartment").val(res.department);
+                    $("#imgStudent").attr('src',"images/students/"+res.picture);
+                    $("#gpa").text(res.gpa);
+
+                    if(res.gpa>=3.5){
+                        $("#honor").text("First Class Honor");
+                    }
+                    else if(res.gpa>=3.25){
+                        $("#honor").text("Second Class Honor");
+                    }
+                    else{
+                        $("#honor").text("None");
+                    }
+
+
+                    if(res.passComprehensive==1){
+                        $("#passCompre").html("Passed");
+                    }
+                    else{
+                        $("#passCompre").html("Not Passed");
+                        $("div#panel-compre").removeClass("panel panel-green");
+                        $("div#panel-compre").addClass("panel panel-red");
+                    }
+
+
+                    if(res.englishScore>840){
+                        $("#englishLevel").html("C2");
+                    }
+                    else if(res.englishScore>735){
+                        $("#englishLevel").html("C1");
+                    }
+                    else if(res.englishScore>600){
+                        $("#englishLevel").html("B2");
+                    }
+                    else{
+                        $("#englishLevel").html("B1");
+                    }
+                    $("#englishScore").text("Score: "+res.englishScore);
+                    
+                },
+                complete:()=> $.LoadingOverlay('hide')
+            });
+            return false;
+        });
+        $("button[type=reset]").click(function(){
+            $("#imgStudent").attr('src',"images/students/0.jpg");
+            $("#honor").text('');
+            $("#passCompre").text('????');
+            $("#gpa").text('x.xx');
+            $("#englishLevel").text('??');
+            $("#englishScore").text('');
+        });
+    });
+</script>
